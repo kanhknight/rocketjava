@@ -4,27 +4,35 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
 
 public class GameCanvas extends JPanel {
 
-    BufferedImage starImage;
-    BufferedImage enemyImage;
+
     BufferedImage playerImage;
     BufferedImage backBuffered;
     Graphics graphics;
 
-    public int positionXStar = 400;
-    public int positionYStar = 300;
+    List<Star> stars;
+    private Random random = new Random();
 
-    public int positionXEnemy = 500;
-    public int positionYEnemy = 0;
+//    public int positionXStar = 400;
+//    public int positionYStar = 300;
 
-    public int positionXPlayer = 400;
-    public int positionYPlayer = 200;
+    List<Enemy> enemies;
+
+    Player players;
+
+
+//    public int positionXPlayer = 400;
+//    public int positionYPlayer = 200;
+
+    public  int countStar;
 
     public GameCanvas() {
         this.setSize(1024, 600);
-
 
         // load image
         this.setupCharacter();
@@ -38,11 +46,36 @@ public class GameCanvas extends JPanel {
     }
 
     private  void  setupCharacter() {
-        this.starImage = this.loadImage("resources/images/star.png");
+        this.setupStar();
+//        this.enemyImage = this.loadImage("resources/images/circle.png");
+        this.setupEnemy();
+//        this.playerImage = this.loadImage("resources/images/circle.png");
 
-        this.enemyImage = this.loadImage("resources/images/circle.png");
+        this.setupPlayer();
 
-        this.playerImage = this.loadImage("resources/images/circle.png");
+    }
+
+    private void setupStar(){
+//        this.star = new Star(3,5);
+//        this.star.image = this.loadImage( "resources/images/star.png");
+//        this.star.x = 1024;
+//        this.star.y = 300;
+//        this.star.width = 5;
+//        this.star.height = 5;
+//        this.star.velocityx = 3;
+//        this.star.velocityy= -3;
+        this.stars = new ArrayList<>();
+    }
+
+    private void setupEnemy(){
+        this.enemies = new ArrayList<>();
+        for (int i =0; i<4; i++){
+            createEnemy();
+        }
+    }
+
+    private void setupPlayer(){
+        createPlayer();
     }
 
     @Override
@@ -59,21 +92,76 @@ public class GameCanvas extends JPanel {
 
     public void renderAll() {
         this.renderBackground();
-        this.graphics.drawImage(this.starImage, this.positionXStar, this.positionYStar, 5, 5, null);
-        this.graphics.drawImage(this.enemyImage, this.positionXEnemy, this.positionYEnemy, 10, 10, null);
-        this.graphics.drawImage(this.playerImage, this.positionXPlayer, this.positionYPlayer, null);
+
+//        this.star.render(this.graphics);
+        this.stars.forEach(star -> star.render(graphics)); //Vong lap foreach
+
+//        this.graphics.drawImage(this.enemyImage, this.positionXEnemy, this.positionYEnemy, 10, 10, null);
+        this.enemies.forEach(enemies -> enemies.render(graphics));
+
+//        this.graphics.drawImage(this.playerImage, this.positionXPlayer, this.positionYPlayer, null);
         this.repaint();
     }
 
     private void renderBackground(){
-        this.graphics.setColor(Color.BLUE);
+        this.graphics.setColor(Color.BLACK);
         this.graphics.fillRect(0, 0, 1024, 600);
     }
 
     public void runAll(){
-        this.positionXStar -=3;
-        this.positionYEnemy +=2;
+        this.createStar();
+        this.stars.forEach(star -> star.run());
+
+//        this.createEnemy();
+        this.enemies.forEach(enemy -> enemy.run());
+
+        this.createPlayer();
     }
+
+    public void createStar(){
+        if (this.countStar == 5) {
+            Star star = new Star(
+                    this.loadImage("resources/images/star.png"),
+                    1024,
+                    this.random.nextInt(600),
+                    3,
+                    3,
+                    -(this.random.nextInt(3) + 1),
+                    0
+            );
+            this.stars.add(star);
+            this.countStar = 0;
+        } else {
+            this.countStar +=1;
+        }
+    }
+
+    public void createEnemy(){
+        Enemy enemy = new Enemy(
+                this.loadImage("resources/images/circle.png"),
+                this.random.nextInt(1024),
+                this.random.nextInt(600),
+                20,
+                20,
+                this.random.nextInt(3),
+                this.random.nextInt(2)
+        );
+        this.enemies.add(enemy);
+    }
+
+    public void  createPlayer(){
+        Player player = new Player(
+                this.loadImage("resources/images/circle.png"),
+                this.random.nextInt(1024),
+                this.random.nextInt(600),
+                20,
+                20,
+                30,
+                30
+        );
+        this.players = player;
+    }
+
 
     private BufferedImage loadImage(String path) {
         try {

@@ -45,7 +45,6 @@ public class GameWindow extends JFrame {
                 if (e.getKeyCode() == KeyEvent.VK_RIGHT) {
                     gameCanvas.positionXPlayer += 8;
                 }
-
             }
 
             @Override

@@ -7,31 +7,28 @@ import java.awt.event.WindowEvent;
 public class GameWindow extends JFrame {
 
     GameCanvas gameCanvas;
-    long lastTime = 0;
+    public long lastTime = 0;
 
     public GameWindow() {
+        this.setSize(1024, 600); // set size window
 
         this.setupGameCanvas();
-
         this.event();
 
         this.setVisible(true);
     }
 
-    private void event(){
-
-        this.keyboardEvent();
-
-        this.windowEvent();
-    }
-
-    private void setupGameCanvas(){
-        this.setSize(1024, 600); // set size window
+    private void setupGameCanvas() {
         this.gameCanvas = new GameCanvas();
         this.add(this.gameCanvas);
     }
 
-    private void keyboardEvent(){
+    private void event() {
+        this.keyboardEvent();
+        this.windowEvent();
+    }
+
+    private void keyboardEvent() {
         this.addKeyListener(new KeyListener() {
             @Override
             public void keyTyped(KeyEvent e) {
@@ -40,20 +37,24 @@ public class GameWindow extends JFrame {
             @Override
             public void keyPressed(KeyEvent e) {
                 if (e.getKeyCode() == KeyEvent.VK_LEFT) {
-                    gameCanvas.positionXPlayer -= 8;
+                    gameCanvas.player.angle += 5.0;
                 }
                 if (e.getKeyCode() == KeyEvent.VK_RIGHT) {
-                    gameCanvas.positionXPlayer += 8;
+                    gameCanvas.player.angle -= 5.0;
                 }
+
+                Vector2D rotate = (new Vector2D(3.5f, 0)).rotate(gameCanvas.player.angle);
+                gameCanvas.player.velocity.set(rotate);
             }
 
             @Override
             public void keyReleased(KeyEvent e) {
+
             }
         });
     }
 
-    private  void windowEvent(){
+    private void windowEvent() {
         this.addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosing(WindowEvent e) {
@@ -61,7 +62,6 @@ public class GameWindow extends JFrame {
             }
         });
     }
-
 
     public void gameLoop() {
         while (true) {
@@ -71,7 +71,6 @@ public class GameWindow extends JFrame {
                 this.gameCanvas.renderAll();
                 this.lastTime = currentTime;
             }
-
 
         }
     }
